@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ariel Hidayatul Faqih — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Share+Tech+Mono&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:     #060810;
+      --bg2:    #0a0d18;
+      --bg3:    #0e1220;
+      --card:   #111828;
+      --border: rgba(255,255,255,0.06);
+      --text:   #d8dce8;
+      --muted:  #616a8a;
+      --gold:   #f0a500;
+      --gold2:  #ffd060;
+      --teal:   #00e5c8;
+      --red:    #ff3b6b;
+      --white:  #ffffff;
+      --serif:  'DM Serif Display', serif;
+      --mono:   'Share Tech Mono', monospace;
+      --sans:   'Plus Jakarta Sans', sans-serif;
+      --glow-gold: 0 0 20px rgba(240,165,0,.35), 0 0 60px rgba(240,165,0,.15);
+      --glow-teal: 0 0 20px rgba(0,229,200,.35), 0 0 60px rgba(0,229,200,.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ══════════════════════════════════════════
+       CUSTOM CURSOR
+    ══════════════════════════════════════════ */
+    #cursor-dot {
+      position: fixed; top:0; left:0; z-index:9999;
+      width: 8px; height: 8px;
+      background: var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%,-50%);
+      transition: transform .1s, background .2s;
+      box-shadow: var(--glow-gold);
+    }
+    #cursor-ring {
+      position: fixed; top:0; left:0; z-index:9998;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(240,165,0,.5);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%,-50%);
+      transition: width .3s, height .3s, opacity .3s, border-color .3s;
+    }
+    body:has(a:hover) #cursor-ring,
+    body:has(button:hover) #cursor-ring {
+      width: 56px; height: 56px;
+      border-color: var(--teal);
+    }
+    body:has(a:hover) #cursor-dot {
+      background: var(--teal);
+      box-shadow: var(--glow-teal);
+    }
+
+    /* ══════════════════════════════════════════
+       SCROLL PROGRESS BAR
+    ══════════════════════════════════════════ */
+    #progress-bar {
+      position: fixed; top:0; left:0; height:2px; z-index:200;
+      background: linear-gradient(90deg, var(--gold), var(--teal));
+      width:0%; transition: width .1s linear;
+      box-shadow: 0 0 10px var(--gold);
+    }
+
+    /* ══════════════════════════════════════════
+       CANVAS — STAR FIELD
+    ══════════════════════════════════════════ */
+    #starfield {
+      position: fixed; inset:0; z-index:0;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       SCANLINE OVERLAY
+    ══════════════════════════════════════════ */
+    body::after {
+      content:'';
+      position: fixed; inset:0; z-index:1;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,.04) 2px,
+        rgba(0,0,0,.04) 4px
+      );
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       NAV
+    ══════════════════════════════════════════ */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      padding: 1rem 4rem;
+      display: flex; align-items:center; justify-content:space-between;
+      background: rgba(6,8,16,.8);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 1rem;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: .1em;
+      display: flex; align-items:center; gap:.5rem;
+    }
+    .nav-logo .bracket { color: var(--teal); }
+    .nav-logo .name { color: var(--gold); }
+
+    .nav-links { display: flex; gap: 2.5rem; list-style:none; }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: .72rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom:-4px; left:0; right:0;
+      height:1px; background: var(--gold);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .25s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    .nav-status {
+      display: flex; align-items:center; gap:.6rem;
+      font-family: var(--mono); font-size: .68rem;
+      color: var(--teal);
+      letter-spacing: .08em;
+    }
+    .status-dot {
+      width:6px; height:6px; border-radius:50%;
+      background: var(--teal);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(0,229,200,.4); }
+      50% { box-shadow: 0 0 0 6px rgba(0,229,200,0); }
+    }
+
+    /* ══════════════════════════════════════════
+       HERO
+    ══════════════════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items:center;
+      padding: 0 4rem;
+      position: relative; z-index:2;
+      overflow: hidden;
+    }
+
+    /* Animated hex grid */
+    .hero-hex {
+      position: absolute; inset:0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 0 L56 16 L56 48 L28 64 L0 48 L0 16Z' fill='none' stroke='rgba(0,229,200,0.04)' stroke-width='1'/%3E%3C/svg%3E");
+      background-size: 56px 100px;
+      animation: hexDrift 30s linear infinite;
+      opacity: 1;
+    }
+    @keyframes hexDrift {
+      0%   { transform: translateY(0) translateX(0); }
+      100% { transform: translateY(-100px) translateX(28px); }
+    }
+
+    /* Corner brackets */
+    .corner {
+      position: absolute;
+      width: 40px; height: 40px;
+      opacity: .4;
+    }
+    .corner::before, .corner::after {
+      content:''; position:absolute;
+      background: var(--teal);
+    }
+    .corner::before { width:2px; height:100%; }
+    .corner::after  { width:100%; height:2px; }
+    .corner.tl { top:4rem; left:4rem; }
+    .corner.tr { top:4rem; right:4rem; transform: scaleX(-1); }
+    .corner.bl { bottom:4rem; left:4rem; transform: scaleY(-1); }
+    .corner.br { bottom:4rem; right:4rem; transform: scale(-1,-1); }
+
+    .hero-content { position:relative; max-width: 900px; }
+
+    .hero-top-tag {
+      display: inline-flex; align-items:center; gap:.8rem;
+      font-family: var(--mono);
+      font-size: .68rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 1.8rem;
+      opacity:0; animation: fadeUp .7s .1s forwards;
+    }
+    .hero-top-tag::before {
+      content:'> ';
+      color: var(--gold);
+    }
+    .hero-top-tag .blink {
+      display: inline-block;
+      width: 8px; height: 14px;
+      background: var(--teal);
+      animation: blink 1s step-end infinite;
+      vertical-align: middle;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .hero-name {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      line-height: 1.02;
+      color: var(--white);
+      margin-bottom: 1rem;
+      opacity:0; animation: fadeUp .7s .25s forwards;
+    }
+    .hero-name .line2 {
+      color: var(--gold);
+      font-style: italic;
+      position: relative;
+      display: inline-block;
+    }
+    /* Glitch effect on name */
+    .hero-name .line2::before,
+    .hero-name .line2::after {
+      content: attr(data-text);
+      position: absolute; top:0; left:0;
+      opacity: 0;
+    }
+    .hero-name .line2::before {
+      color: var(--teal);
+      animation: glitch1 4s 2s infinite;
+      clip-path: polygon(0 20%,100% 20%,100% 40%,0 40%);
+    }
+    .hero-name .line2::after {
+      color: var(--red);
+      animation: glitch2 4s 2s infinite;
+      clip-path: polygon(0 60%,100% 60%,100% 75%,0 75%);
+    }
+    @keyframes glitch1 {
+      0%,94%,100% { opacity:0; transform:none; }
+      95% { opacity:.6; transform:translate(-3px,1px); }
+      97% { opacity:.6; transform:translate(3px,-1px); }
+    }
+    @keyframes glitch2 {
+      0%,92%,100% { opacity:0; transform:none; }
+      93% { opacity:.5; transform:translate(4px,0); }
+      96% { opacity:.5; transform:translate(-4px,1px); }
+    }
+
+    .hero-sub {
+      font-family: var(--mono);
+      font-size: .85rem;
+      color: var(--muted);
+      margin-bottom: .6rem;
+      opacity:0; animation: fadeUp .7s .4s forwards;
+    }
+    .hero-sub .typed-text { color: var(--teal); }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+      opacity:0; animation: fadeUp .7s .55s forwards;
+      border-left: 2px solid rgba(240,165,0,.3);
+      padding-left: 1.2rem;
+    }
+
+    .hero-pills {
+      display: flex; flex-wrap:wrap; gap:.6rem;
+      margin-bottom: 2.8rem;
+      opacity:0; animation: fadeUp .7s .7s forwards;
+    }
+    .pill {
+      font-family: var(--mono);
+      font-size: .65rem; letter-spacing: .08em;
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,.07);
+      padding: .3rem .9rem; border-radius:2px;
+      background: rgba(255,255,255,.02);
+      transition: all .2s;
+    }
+    .pill:hover {
+      color: var(--teal);
+      border-color: var(--teal);
+      box-shadow: var(--glow-teal);
+    }
+
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap:wrap;
+      opacity:0; animation: fadeUp .7s .85s forwards;
+    }
+    .btn-primary {
+      display: inline-flex; align-items:center; gap:.5rem;
+      background: var(--gold);
+      color: var(--bg);
+      font-family: var(--mono);
+      font-weight: 600; font-size:.78rem;
+      letter-spacing: .1em;
+      padding: .9rem 2.2rem; border-radius:2px;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: all .25s;
+      position: relative; overflow:hidden;
+    }
+    .btn-primary::after {
+      content:'';
+      position:absolute; top:0; left:-100%; width:100%; height:100%;
+      background: linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
+      transition: left .5s;
+    }
+    .btn-primary:hover::after { left:100%; }
+    .btn-primary:hover { box-shadow: var(--glow-gold); transform: translateY(-2px); }
+
+    .btn-ghost {
+      display: inline-flex; align-items:center; gap:.5rem;
+      border: 1px solid rgba(0,229,200,.3);
+      color: var(--teal);
+      font-family: var(--mono);
+      font-size:.78rem; letter-spacing:.1em;
+      padding: .9rem 2.2rem; border-radius:2px;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: all .25s;
+    }
+    .btn-ghost:hover {
+      background: rgba(0,229,200,.06);
+      box-shadow: var(--glow-teal);
+      transform: translateY(-2px);
+    }
+
+    /* Floating data readout */
+    .hero-readout {
+      position: absolute; right:4rem; top:50%;
+      transform: translateY(-50%);
+      font-family: var(--mono); font-size:.65rem;
+      color: rgba(0,229,200,.3);
+      line-height: 2;
+      text-align: right;
+      opacity:0; animation: fadeIn 1s 1.2s forwards;
+    }
+    .hero-readout .val { color: rgba(240,165,0,.5); }
+
+    /* ══════════════════════════════════════════
+       SECTIONS BASE
+    ══════════════════════════════════════════ */
+    section { padding: 7rem 4rem; position: relative; z-index:2; }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: .68rem; letter-spacing:.25em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: .8rem;
+      display: flex; align-items:center; gap:.8rem;
+    }
+    .section-label::before { content: '// '; color: var(--gold); }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--white);
+      line-height: 1.15;
+      margin-bottom: .8rem;
+    }
+    .section-sub { color: var(--muted); font-size:.9rem; max-width:500px; margin-bottom:4rem; }
+
+    /* Animated line divider */
+    .line-divider {
+      height:1px; margin: 0 0 4rem;
+      background: linear-gradient(90deg, var(--teal), var(--gold), transparent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 1s .2s;
+    }
+    .line-divider.visible { transform: scaleX(1); }
+
+    /* ══════════════════════════════════════════
+       ABOUT
+    ══════════════════════════════════════════ */
+    #about { background: var(--bg2); }
+
+    .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; }
+
+    .about-text p { color:var(--muted); font-size:.93rem; margin-bottom:1.2rem; line-height:1.9; }
+    .about-text p strong { color:var(--text); font-weight:600; }
+
+    .about-stats { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius:4px; padding:1.8rem;
+      position:relative; overflow:hidden;
+      transition: border-color .3s, transform .3s;
+    }
+    .stat-card::before {
+      content:'';
+      position:absolute; inset:0;
+      background: linear-gradient(135deg, rgba(240,165,0,.04), transparent);
+      opacity:0; transition: opacity .3s;
+    }
+    .stat-card:hover { border-color: rgba(240,165,0,.4); transform:translateY(-4px); }
+    .stat-card:hover::before { opacity:1; }
+    .stat-card:hover .stat-number { text-shadow: var(--glow-gold); }
+
+    /* Top-edge glow bar */
+    .stat-card::after {
+      content:'';
+      position:absolute; top:0; left:0; right:0; height:1px;
+      background: linear-gradient(90deg,transparent,var(--gold),transparent);
+      opacity:0; transition: opacity .3s;
+    }
+    .stat-card:hover::after { opacity:1; }
+
+    .stat-number {
+      font-family: var(--mono);
+      font-size: 2.4rem;
+      color: var(--gold);
+      line-height:1;
+      margin-bottom:.4rem;
+      transition: text-shadow .3s;
+    }
+    .stat-number.count { font-family: var(--serif); }
+    .stat-label { font-size:.73rem; color:var(--muted); letter-spacing:.05em; }
+
+    /* ══════════════════════════════════════════
+       EDUCATION
+    ══════════════════════════════════════════ */
+    #education { background: var(--bg); }
+    .edu-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius:4px; padding:2.5rem;
+      display:flex; gap:2rem; max-width:820px;
+      position:relative; overflow:hidden;
+      transition: border-color .3s;
+    }
+    .edu-card::before {
+      content:'';
+      position:absolute; left:0; top:0; bottom:0; width:2px;
+      background: linear-gradient(to bottom, var(--teal), var(--gold));
+    }
+    .edu-card:hover { border-color: rgba(0,229,200,.3); }
+
+    .edu-icon {
+      width:54px; height:54px;
+      background: rgba(0,229,200,.06);
+      border:1px solid rgba(0,229,200,.15);
+      border-radius:4px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.5rem; flex-shrink:0;
+    }
+    .edu-school { font-family:var(--serif); font-size:1.4rem; color:var(--white); margin-bottom:.2rem; }
+    .edu-degree { font-family:var(--mono); font-size:.78rem; color:var(--teal); margin-bottom:1rem; letter-spacing:.05em; }
+    .edu-meta { display:flex; flex-wrap:wrap; gap:1.5rem; margin-bottom:1rem; }
+    .edu-meta span { font-family:var(--mono); font-size:.72rem; color:var(--muted); }
+    .edu-meta strong { color:var(--gold); }
+
+    /* ══════════════════════════════════════════
+       EXPERIENCE
+    ══════════════════════════════════════════ */
+    #experience { background: var(--bg2); }
+    .exp-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+
+    .exp-card {
+      background: var(--bg3);
+      border:1px solid var(--border);
+      border-radius:4px; padding:2rem;
+      transition: all .3s;
+      position:relative; overflow:hidden;
+    }
+    .exp-card::after {
+      content:'';
+      position:absolute; inset:0;
+      background: linear-gradient(135deg,rgba(0,229,200,.03),transparent);
+      opacity:0; transition:opacity .3s;
+    }
+    .exp-card:hover { border-color:rgba(240,165,0,.2); transform:translateY(-4px); }
+    .exp-card:hover::after { opacity:1; }
+
+    /* Animated corner on hover */
+    .exp-card .exp-corner {
+      position:absolute; top:0; right:0;
+      width:0; height:0;
+      border-style:solid;
+      border-width:0 24px 24px 0;
+      border-color:transparent rgba(240,165,0,.15) transparent transparent;
+      transition: border-width .3s;
+    }
+    .exp-card:hover .exp-corner { border-width:0 36px 36px 0; }
+
+    .exp-tag {
+      font-family:var(--mono); font-size:.62rem;
+      letter-spacing:.1em; text-transform:uppercase;
+      padding:.2rem .7rem; border-radius:2px;
+      margin-bottom:.9rem; display:inline-block;
+    }
+    .tag-org     { background:rgba(240,165,0,.08); color:var(--gold);  border:1px solid rgba(240,165,0,.15); }
+    .tag-academic{ background:rgba(0,229,200,.08); color:var(--teal);  border:1px solid rgba(0,229,200,.15); }
+    .tag-social  { background:rgba(255,59,107,.08);color:var(--red);   border:1px solid rgba(255,59,107,.15);}
+
+    .exp-title  { font-size:.95rem; font-weight:600; color:var(--white); margin-bottom:.25rem; }
+    .exp-org    { font-size:.78rem; color:var(--muted); margin-bottom:.8rem; }
+    .exp-period { font-family:var(--mono); font-size:.67rem; color:var(--gold); margin-bottom:.7rem; }
+    .exp-desc   { font-size:.8rem; color:var(--muted); line-height:1.75; }
+
+    /* ══════════════════════════════════════════
+       RESEARCH
+    ══════════════════════════════════════════ */
+    #research { background: var(--bg); }
+    .research-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
+
+    .research-card {
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius:4px; padding:2rem;
+      transition:all .3s;
+      position:relative; overflow:hidden;
+    }
+    /* Neon sweep on hover */
+    .research-card::before {
+      content:'';
+      position:absolute; top:-50%; left:-60%;
+      width:40%; height:200%;
+      background: linear-gradient(90deg,transparent,rgba(0,229,200,.06),transparent);
+      transform:skewX(-15deg);
+      transition:left .5s;
+    }
+    .research-card:hover::before { left:160%; }
+    .research-card:hover { border-color:rgba(0,229,200,.25); transform:translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,.4); }
+
+    .research-icon { font-size:1.8rem; margin-bottom:.9rem; }
+    .research-title { font-size:.9rem; font-weight:600; color:var(--white); margin-bottom:.5rem; }
+    .research-desc  { font-size:.78rem; color:var(--muted); line-height:1.75; }
+    .research-badge {
+      display:inline-block; font-family:var(--mono); font-size:.62rem;
+      padding:.2rem .6rem; border-radius:2px; margin-top:.9rem;
+      background:rgba(240,165,0,.06); color:var(--gold);
+      border:1px solid rgba(240,165,0,.15);
+    }
+
+    /* ══════════════════════════════════════════
+       SKILLS
+    ══════════════════════════════════════════ */
+    #skills { background: var(--bg2); }
+    .skills-wrapper { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.5rem; }
+
+    .skills-group {
+      background: var(--bg3);
+      border:1px solid var(--border);
+      border-radius:4px; padding:2rem;
+    }
+    .skills-group-title {
+      font-family:var(--mono); font-size:.68rem;
+      letter-spacing:.18em; text-transform:uppercase;
+      color:var(--gold); margin-bottom:1.5rem;
+    }
+    .skill-item {
+      display:flex; align-items:center; gap:.8rem;
+      margin-bottom:.9rem; font-size:.83rem; color:var(--text);
+    }
+    .skill-dot {
+      width:5px; height:5px; border-radius:50%;
+      background:var(--gold); flex-shrink:0;
+      box-shadow: 0 0 6px var(--gold);
+    }
+    .skill-dot.teal   { background:var(--teal);  box-shadow:0 0 6px var(--teal); }
+    .skill-dot.red    { background:var(--red);   box-shadow:0 0 6px var(--red); }
+
+    /* ══════════════════════════════════════════
+       CONTACT
+    ══════════════════════════════════════════ */
+    #contact { background: var(--bg); }
+    .contact-wrapper { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:start; }
+
+    .contact-tagline {
+      font-family:var(--serif);
+      font-size:clamp(1.8rem,3vw,2.8rem);
+      color:var(--white); line-height:1.2;
+      margin-bottom:1.2rem;
+    }
+    .contact-tagline em { color:var(--gold); font-style:italic; }
+    .contact-text { color:var(--muted); font-size:.88rem; line-height:1.85; margin-bottom:2rem; }
+
+    .contact-links { display:flex; flex-direction:column; gap:.9rem; }
+    .contact-link {
+      display:flex; align-items:center; gap:1rem;
+      text-decoration:none;
+      padding:1.1rem 1.4rem;
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius:4px;
+      transition:all .25s; color:var(--text);
+      position:relative; overflow:hidden;
+    }
+    .contact-link::before {
+      content:'';
+      position:absolute; left:0; top:0; bottom:0; width:0;
+      background: linear-gradient(90deg,rgba(240,165,0,.06),transparent);
+      transition:width .3s;
+    }
+    .contact-link:hover::before { width:100%; }
+    .contact-link:hover { border-color:rgba(240,165,0,.3); transform:translateX(5px); }
+
+    .contact-link-icon {
+      width:38px; height:38px;
+      background:rgba(240,165,0,.06);
+      border:1px solid rgba(240,165,0,.12);
+      border-radius:3px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1rem; flex-shrink:0;
+    }
+    .contact-link-label { font-family:var(--mono); font-size:.65rem; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; }
+    .contact-link-value { font-size:.87rem; color:var(--white); font-weight:500; }
+
+    /* ══════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════ */
+    footer {
+      background:var(--bg);
+      border-top:1px solid var(--border);
+      padding:2rem 4rem;
+      display:flex; justify-content:space-between; align-items:center;
+      position:relative; z-index:2;
+    }
+    footer p { font-family:var(--mono); font-size:.68rem; color:var(--muted); }
+    footer span { color:var(--gold); }
+
+    /* ══════════════════════════════════════════
+       ANIMATIONS & REVEALS
+    ══════════════════════════════════════════ */
+    @keyframes fadeUp  { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+    @keyframes slideRight { from{opacity:0;transform:translateX(-20px)} to{opacity:1;transform:translateX(0)} }
+
+    .reveal          { opacity:0; transform:translateY(28px); transition:opacity .8s, transform .8s; }
+    .reveal-left     { opacity:0; transform:translateX(-30px); transition:opacity .8s, transform .8s; }
+    .reveal-right    { opacity:0; transform:translateX(30px); transition:opacity .8s, transform .8s; }
+    .reveal.visible,
+    .reveal-left.visible,
+    .reveal-right.visible { opacity:1; transform:none; }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+    .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:.3rem; }
+    .hamburger span { width:24px; height:2px; background:var(--text); display:block; }
+
+    @media (max-width:1100px) {
+      nav { padding:1rem 2rem; }
+      section, #hero { padding-left:2rem; padding-right:2rem; }
+      .about-grid, .contact-wrapper { grid-template-columns:1fr; gap:3rem; }
+      .exp-grid { grid-template-columns:1fr; }
+      .research-grid { grid-template-columns:1fr 1fr; }
+      .hero-readout { display:none; }
+      .corner { display:none; }
+    }
+    @media (max-width:700px) {
+      body { cursor:auto; }
+      #cursor-dot, #cursor-ring { display:none; }
+      nav { padding:1rem 1.2rem; }
+      .nav-links, .nav-status { display:none; }
+      .hamburger { display:flex; }
+      section, #hero { padding:4rem 1.2rem; }
+      .research-grid, .skills-wrapper { grid-template-columns:1fr; }
+      footer { flex-direction:column; gap:.5rem; text-align:center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cursor -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- Scroll progress -->
+  <div id="progress-bar"></div>
+
+  <!-- Star field canvas -->
+  <canvas id="starfield"></canvas>
+
+  <!-- ─── NAV ─── -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">
+      <span class="bracket">[</span>
+      <span class="name">ARF</span>
+      <span class="bracket">]</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#education">Edu</a></li>
+      <li><a href="#experience">Exp</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-status">
+      <span class="status-dot"></span>
+      Available for Collaboration
+    </div>
+    <div class="hamburger" onclick="toggleMenu(this)">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- ─── HERO ─── -->
+  <section id="hero">
+    <div class="hero-hex"></div>
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <div class="hero-content">
+      <p class="hero-top-tag">
+        MAHASISWA &amp; DEVELOPER · BANDUNG, INDONESIA
+        <span class="blink"></span>
+      </p>
+
+      <h1 class="hero-name">
+        Ariel Hidayatul<br>
+        <span class="line2" data-text="Faqih">Faqih</span>
+      </h1>
+
+      <p class="hero-sub">
+        <span class="typed-text" id="typed"></span><span class="blink" style="background:var(--gold);width:6px;height:13px;display:inline-block;vertical-align:middle;margin-left:2px;"></span>
+      </p>
+
+      <p class="hero-desc">
+        Mahasiswa Pendidikan Ilmu Komputer di UPI — membangun teknologi bermakna,
+        dari riset deep learning hingga pengembangan web, dengan visi memperluas
+        akses pendidikan ke wilayah 3T.
+      </p>
+
+      <div class="hero-pills">
+        <span class="pill">Web Development</span>
+        <span class="pill">Deep Learning</span>
+        <span class="pill">Fotografi Digital</span>
+        <span class="pill">EdTech 3T</span>
+        <span class="pill">Leadership</span>
+        <span class="pill">IPK 3.88</span>
+        <span class="pill">Sinta 5</span>
+      </div>
+
+      <div class="hero-actions">
+        <a href="#contact" class="btn-primary">CONTACT ME →</a>
+        <a href="#experience" class="btn-ghost">EXPLORE WORK</a>
+      </div>
+    </div>
+
+    <div class="hero-readout">
+      STATUS <span class="val">// ONLINE</span><br>
+      MODE <span class="val">// DEVELOPER</span><br>
+      IPK <span class="val">// 3.88/4.00</span><br>
+      SKS <span class="val">// 64</span><br>
+      PRODI <span class="val">// PEND. ILKOM</span><br>
+      UNIV <span class="val">// UPI</span><br>
+      LOKASI <span class="val">// BANDUNG</span><br>
+    </div>
+  </section>
+
+  <!-- ─── ABOUT ─── -->
+  <section id="about">
+    <p class="section-label reveal">Tentang Saya</p>
+    <div class="about-grid">
+      <div class="about-text reveal-left">
+        <h2 class="section-title">Teknologi untuk<br>Dampak Nyata</h2>
+        <div class="line-divider"></div>
+        <p>Saya <strong>Ariel Hidayatul Faqih</strong>, mahasiswa S1 Pendidikan Ilmu Komputer FPMIPA UPI.
+        Berasal dari Majalengka, Jawa Barat — saya tumbuh dengan keyakinan bahwa pendidikan
+        adalah kunci membuka peluang, terlepas dari kondisi ekonomi.</p>
+        <p>Aktif di <strong>KEMAKOM</strong> sebagai Ketua Biro Penelitian &amp; Pengembangan,
+        Staf Divisi Kominfo di <strong>Kabinet Satyasena</strong> Asrama UPI,
+        dan menjalankan dua riset kolaborasi bersama dosen — proyek <strong>deep learning</strong>
+        serta pengembangan website penelitian.</p>
+        <p>Passion saya: teknologi yang benar-benar berdampak — khususnya bagaimana inovasi
+        digital dapat menjangkau dan memberdayakan masyarakat di wilayah <strong>3T</strong>.</p>
+      </div>
+      <div class="about-stats reveal-right" style="transition-delay:.1s">
+        <div class="stat-card">
+          <div class="stat-number count" data-target="388" data-decimal>3.88</div>
+          <div class="stat-label">Indeks Prestasi Kumulatif</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number count" data-target="64">64</div>
+          <div class="stat-label">SKS Telah Ditempuh</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number count" data-target="2">2</div>
+          <div class="stat-label">Proyek Riset Aktif</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" style="font-family:var(--mono);font-size:1.5rem">SINTA 5</div>
+          <div class="stat-label">Publikasi Jurnal Ilmiah</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── EDUCATION ─── -->
+  <section id="education">
+    <p class="section-label reveal">Pendidikan</p>
+    <h2 class="section-title reveal">Latar Belakang<br>Akademik</h2>
+    <p class="section-sub reveal">Menempuh studi dengan dedikasi penuh dan konsistensi berprestasi.</p>
+    <div class="edu-card reveal">
+      <div class="edu-icon">🎓</div>
+      <div class="edu-body">
+        <h3 class="edu-school">Universitas Pendidikan Indonesia</h3>
+        <p class="edu-degree">S1_PENDIDIKAN_ILMU_KOMPUTER // FPMIPA</p>
+        <div class="edu-meta">
+          <span>📅 2024 – SEKARANG</span>
+          <span>IPK: <strong>3,88 / 4,00</strong></span>
+          <span>SKS: <strong>64</strong></span>
+          <span>📍 Asrama UPI Bumi Siliwangi, Bandung</span>
+        </div>
+        <p style="font-size:.82rem; color:var(--muted);">
+          Aktif menempuh kuliah dengan mayoritas nilai A. Terlibat dalam penelitian akademik,
+          kepanitiaan, dan organisasi kemahasiswaan sejak semester pertama.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── EXPERIENCE ─── -->
+  <section id="experience">
+    <p class="section-label reveal">Pengalaman</p>
+    <h2 class="section-title reveal">Organisasi &<br>Kepemimpinan</h2>
+    <p class="section-sub reveal">Kontribusi nyata di berbagai lingkup — dari organisasi mahasiswa hingga pengajaran.</p>
+    <div class="exp-grid">
+      <div class="exp-card reveal">
+        <div class="exp-corner"></div>
+        <span class="exp-tag tag-org">Organisasi</span>
+        <h3 class="exp-title">Ketua Biro Penelitian & Pengembangan</h3>
+        <p class="exp-org">KEMAKOM — Keluarga Mahasiswa Komputer UPI</p>
+        <p class="exp-period">FEB – DES 2025</p>
+        <p class="exp-desc">Memimpin biro dalam pengembangan program kerja, pembimbingan anggota, dan penguatan struktur organisasi mahasiswa komputer UPI.</p>
+      </div>
+      <div class="exp-card reveal" style="transition-delay:.08s">
+        <div class="exp-corner"></div>
+        <span class="exp-tag tag-org">Organisasi</span>
+        <h3 class="exp-title">Staf Divisi Komunikasi & Informasi</h3>
+        <p class="exp-org">Kabinet Satyasena — Asrama UPI Bumi Siliwangi</p>
+        <p class="exp-period">DES 2025 – SEKARANG</p>
+        <p class="exp-desc">Mengelola komunikasi internal dan eksternal asrama, termasuk penyebaran informasi dan koordinasi kegiatan penghuni.</p>
+      </div>
+      <div class="exp-card reveal" style="transition-delay:.16s">
+        <div class="exp-corner"></div>
+        <span class="exp-tag tag-academic">Akademik</span>
+        <h3 class="exp-title">Asisten Praktikum Algoritma & Pemrograman</h3>
+        <p class="exp-org">Prodi Pendidikan Ilmu Komputer — UPI</p>
+        <p class="exp-period">2024 – SEKARANG</p>
+        <p class="exp-desc">Membimbing mahasiswa angkatan 2025, merancang modul praktikum, dan melakukan evaluasi hasil kerja mahasiswa.</p>
+      </div>
+      <div class="exp-card reveal" style="transition-delay:.24s">
+        <div class="exp-corner"></div>
+        <span class="exp-tag tag-academic">Akademik</span>
+        <h3 class="exp-title">Mentor Leadership</h3>
+        <p class="exp-org">Prodi Pendidikan Ilmu Komputer — UPI</p>
+        <p class="exp-period">2024 – SEKARANG</p>
+        <p class="exp-desc">Membimbing mahasiswa baru dalam pengembangan karakter, kepemimpinan, dan adaptasi lingkungan kampus.</p>
+      </div>
+      <div class="exp-card reveal" style="transition-delay:.32s">
+        <div class="exp-corner"></div>
+        <span class="exp-tag tag-academic">Akademik</span>
+        <h3 class="exp-title">Mentor Asrama</h3>
+        <p class="exp-org">Asrama UPI Bumi Siliwangi</p>
+        <p class="exp-period">2024 – SEKARANG</p>
+        <p class="exp-desc">Membimbing mahasiswa baru dalam pengembangan karakter, kedisiplinan, dan adaptasi kehidupan asrama.</p>
+      </div>
+      <div class="exp-card reveal" style="transition-delay:.4s">
+        <div class="exp-corner"></div>
+        <span class="exp-tag tag-social">Sosial</span>
+        <h3 class="exp-title">Staf Humas P2M</h3>
+        <p class="exp-org">Pengabdian pada Masyarakat — UPI</p>
+        <p class="exp-period">2024</p>
+        <p class="exp-desc">Berperan dalam kegiatan sosial dan pemberdayaan masyarakat sebagai bagian dari tri dharma perguruan tinggi.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── RESEARCH ─── -->
+  <section id="research">
+    <p class="section-label reveal">Riset & Prestasi</p>
+    <h2 class="section-title reveal">Karya &<br>Pencapaian</h2>
+    <p class="section-sub reveal">Penelitian kolaboratif dan publikasi ilmiah yang terus berkembang.</p>
+    <div class="research-grid">
+      <div class="research-card reveal">
+        <div class="research-icon">🌐</div>
+        <h3 class="research-title">Pengembangan Website Penelitian</h3>
+        <p class="research-desc">Kolaborasi aktif bersama Yogi Prasetyo, M.Kom dalam membangun platform website penelitian UPI — identifikasi masalah teknis dan perancangan solusi arsitektur.</p>
+        <span class="research-badge">// PROYEK AKTIF</span>
+      </div>
+      <div class="research-card reveal" style="transition-delay:.1s">
+        <div class="research-icon">🔭</div>
+        <h3 class="research-title">Deep Learning: Polusi Cahaya & Illegal Fishing</h3>
+        <p class="research-desc">Riset deep learning bersama dosen untuk deteksi polusi cahaya dan pemantauan illegal fishing via citra satelit dan model machine learning.</p>
+        <span class="research-badge">// PROYEK AKTIF</span>
+      </div>
+      <div class="research-card reveal" style="transition-delay:.2s">
+        <div class="research-icon">📄</div>
+        <h3 class="research-title">Publikasi Jurnal Ilmiah Sinta 5</h3>
+        <p class="research-desc">Berhasil mempublikasikan karya ilmiah pada jurnal bereputasi Sinta 5 — bukti komitmen terhadap penelitian dan penulisan ilmiah berkualitas.</p>
+        <span class="research-badge">// TERPUBLIKASI</span>
+      </div>
+      <div class="research-card reveal" style="transition-delay:.3s">
+        <div class="research-icon">🏆</div>
+        <h3 class="research-title">PKM — Lolos Seleksi Nasional</h3>
+        <p class="research-desc">Lolos seleksi nasional Program Kreativitas Mahasiswa (PKM) hingga tahap pertama, bersaing dari universitas di seluruh Indonesia.</p>
+        <span class="research-badge">// NASIONAL</span>
+      </div>
+      <div class="research-card reveal" style="transition-delay:.4s">
+        <div class="research-icon">📱</div>
+        <h3 class="research-title">Contact Person Mahasiswa Baru 2025</h3>
+        <p class="research-desc">Narahubung resmi bagi maba angkatan 2025 di dua program studi: Pendidikan Ilmu Komputer dan Ilmu Komputer.</p>
+        <span class="research-badge">// KEPERCAYAAN PRODI</span>
+      </div>
+      <div class="research-card reveal" style="transition-delay:.5s">
+        <div class="research-icon">🎯</div>
+        <h3 class="research-title">Visi: EdTech untuk Wilayah 3T</h3>
+        <p class="research-desc">Berkomitmen menyebarluaskan pendidikan teknologi ke daerah terdepan, terluar, tertinggal — menjembatani kesenjangan digital melalui inovasi.</p>
+        <span class="research-badge">// MISI JANGKA PANJANG</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SKILLS ─── -->
+  <section id="skills">
+    <p class="section-label reveal">Keahlian</p>
+    <h2 class="section-title reveal">Kompetensi &<br>Bidang Fokus</h2>
+    <p class="section-sub reveal">Kombinasi keahlian teknis, kepemimpinan, dan kreativitas.</p>
+    <div class="skills-wrapper">
+      <div class="skills-group reveal">
+        <p class="skills-group-title">// HARD SKILLS</p>
+        <div class="skill-item"><span class="skill-dot"></span>Pengembangan Website</div>
+        <div class="skill-item"><span class="skill-dot"></span>Algoritma &amp; Pemrograman</div>
+        <div class="skill-item"><span class="skill-dot"></span>Deep Learning / AI</div>
+        <div class="skill-item"><span class="skill-dot"></span>Fotografi Digital</div>
+        <div class="skill-item"><span class="skill-dot"></span>Penulisan Karya Ilmiah</div>
+        <div class="skill-item"><span class="skill-dot"></span>Pengelolaan Konten Digital</div>
+      </div>
+      <div class="skills-group reveal" style="transition-delay:.1s">
+        <p class="skills-group-title">// SOFT SKILLS</p>
+        <div class="skill-item"><span class="skill-dot teal"></span>Kepemimpinan (Leadership)</div>
+        <div class="skill-item"><span class="skill-dot teal"></span>Komunikasi &amp; Humas</div>
+        <div class="skill-item"><span class="skill-dot teal"></span>Mentoring &amp; Pengajaran</div>
+        <div class="skill-item"><span class="skill-dot teal"></span>Kerja Tim (Teamwork)</div>
+        <div class="skill-item"><span class="skill-dot teal"></span>Berpikir Analitis</div>
+        <div class="skill-item"><span class="skill-dot teal"></span>Manajemen Waktu</div>
+      </div>
+      <div class="skills-group reveal" style="transition-delay:.2s">
+        <p class="skills-group-title">// MINAT &amp; FOKUS</p>
+        <div class="skill-item"><span class="skill-dot red"></span>EdTech untuk Wilayah 3T</div>
+        <div class="skill-item"><span class="skill-dot red"></span>Pemberdayaan Masyarakat</div>
+        <div class="skill-item"><span class="skill-dot red"></span>Fotografi &amp; Konten Kreatif</div>
+        <div class="skill-item"><span class="skill-dot red"></span>Riset &amp; Inovasi Teknologi</div>
+        <div class="skill-item"><span class="skill-dot red"></span>Administrasi &amp; Data</div>
+        <div class="skill-item"><span class="skill-dot red"></span>Pengembangan Karakter</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CONTACT ─── -->
+  <section id="contact">
+    <div class="contact-wrapper">
+      <div class="reveal-left">
+        <p class="section-label">Kontak</p>
+        <h2 class="contact-tagline">Mari Berkolaborasi &<br><em>Berkarya Bersama</em></h2>
+        <p class="contact-text">
+          Terbuka untuk kolaborasi riset, proyek pengembangan teknologi,
+          maupun diskusi seputar EdTech dan inovasi digital.
+          Jangan ragu untuk menghubungi saya!
+        </p>
+        <a href="mailto:arielhf00@gmail.com" class="btn-primary">KIRIM EMAIL →</a>
+      </div>
+      <div class="contact-links reveal-right" style="transition-delay:.1s">
+        <a href="mailto:arielhf00@gmail.com" class="contact-link">
+          <div class="contact-link-icon">✉️</div>
+          <div><p class="contact-link-label">Email</p><p class="contact-link-value">arielhf00@gmail.com</p></div>
+        </a>
+        <a href="https://wa.me/6285624018100" target="_blank" class="contact-link">
+          <div class="contact-link-icon">📱</div>
+          <div><p class="contact-link-label">WhatsApp</p><p class="contact-link-value">085624018100</p></div>
+        </a>
+        <a href="https://instagram.com/arielfaqih" target="_blank" class="contact-link">
+          <div class="contact-link-icon">📸</div>
+          <div><p class="contact-link-label">Instagram</p><p class="contact-link-value">@arielfaqih</p></div>
+        </a>
+        <div class="contact-link" style="cursor:default">
+          <div class="contact-link-icon">📍</div>
+          <div><p class="contact-link-label">Lokasi</p><p class="contact-link-value">Majalengka, Jawa Barat</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─── -->
+  <footer>
+    <p>© 2025 <span>Ariel Hidayatul Faqih</span>. All rights reserved.</p>
+    <p>Built with <span>♡</span> · <span>Universitas Pendidikan Indonesia</span></p>
+  </footer>
+
+  <!-- ══════════════════════════════════════════
+       SCRIPTS
+  ══════════════════════════════════════════ -->
+  <script>
+  /* ── Star field ── */
+  (function(){
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let W, H, stars = [];
+
+    function resize(){
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    for(let i=0;i<180;i++){
+      stars.push({
+        x: Math.random()*1920,
+        y: Math.random()*1080,
+        r: Math.random()*1.2+.2,
+        a: Math.random(),
+        speed: Math.random()*.3+.05,
+        drift: (Math.random()-.5)*.15
+      });
+    }
+
+    function drawStars(){
+      ctx.clearRect(0,0,W,H);
+      stars.forEach(s=>{
+        s.a += s.speed * .012;
+        if(s.a>1) s.a=0;
+        s.x += s.drift;
+        if(s.x<0) s.x=W; if(s.x>W) s.x=0;
+        const alpha = Math.abs(Math.sin(s.a*Math.PI));
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fillStyle = `rgba(200,220,255,${alpha*.6})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(drawStars);
+    }
+    drawStars();
+  })();
+
+  /* ── Custom cursor ── */
+  (function(){
+    const dot  = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let rx=0, ry=0, mx=0, my=0;
+
+    document.addEventListener('mousemove', e=>{
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx+'px';
+      dot.style.top  = my+'px';
+    });
+
+    function loop(){
+      rx += (mx-rx)*.12;
+      ry += (my-ry)*.12;
+      ring.style.left = rx+'px';
+      ring.style.top  = ry+'px';
+      requestAnimationFrame(loop);
+    }
+    loop();
+  })();
+
+  /* ── Scroll progress bar ── */
+  window.addEventListener('scroll', ()=>{
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    document.getElementById('progress-bar').style.width = pct+'%';
+  });
+
+  /* ── Reveal on scroll ── */
+  const revealEls = document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.line-divider');
+  const revealObs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{ threshold: 0.1 });
+  revealEls.forEach(el=>revealObs.observe(el));
+
+  /* ── Counter animation ── */
+  function animateCount(el){
+    const target  = parseFloat(el.dataset.target);
+    const decimal = el.hasAttribute('data-decimal');
+    const dur = 1600;
+    const start = performance.now();
+    function step(now){
+      const p = Math.min((now-start)/dur,1);
+      const ease = 1-Math.pow(1-p,3);
+      const val = target * ease;
+      el.textContent = decimal
+        ? (val/100).toFixed(2)
+        : Math.round(val);
+      if(p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  const countObs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting && e.target.dataset.target){
+        animateCount(e.target);
+        countObs.unobserve(e.target);
+      }
+    });
+  },{ threshold:.5 });
+  document.querySelectorAll('[data-target]').forEach(el=>countObs.observe(el));
+
+  /* ── Typewriter ── */
+  (function(){
+    const el = document.getElementById('typed');
+    const phrases = [
+      'Pendidikan Ilmu Komputer @ UPI',
+      'Web Developer',
+      'Deep Learning Researcher',
+      'EdTech Enthusiast',
+      'Fotografer Digital',
+      'Leadership Mentor'
+    ];
+    let pi=0, ci=0, deleting=false;
+
+    function type(){
+      const phrase = phrases[pi];
+      el.textContent = deleting ? phrase.slice(0,ci--) : phrase.slice(0,ci++);
+      if(!deleting && ci>phrase.length){ deleting=true; setTimeout(type,1400); return; }
+      if(deleting && ci<0){ deleting=false; pi=(pi+1)%phrases.length; setTimeout(type,400); return; }
+      setTimeout(type, deleting ? 40 : 75);
+    }
+    setTimeout(type, 1000);
+  })();
+
+  /* ── Navbar nav color on section ── */
+  window.addEventListener('scroll', ()=>{
+    const nav = document.getElementById('navbar');
+    nav.style.borderBottomColor = window.scrollY > 60
+      ? 'rgba(240,165,0,.2)' : 'rgba(255,255,255,.06)';
+  });
+
+  /* ── Mobile menu ── */
+  function toggleMenu(btn){
+    const links = document.querySelector('.nav-links');
+    const isOpen = links.style.display === 'flex';
+    links.style.cssText = isOpen
+      ? ''
+      : 'display:flex;flex-direction:column;position:fixed;top:60px;left:0;right:0;background:rgba(6,8,16,.97);padding:2rem;gap:1.5rem;border-bottom:1px solid rgba(255,255,255,.06);z-index:99;';
+  }
+  </script>
+</body>
+</html>
