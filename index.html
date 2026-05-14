@@ -617,12 +617,22 @@
     /* ══════════════════════════════════════════
        EDUCATION
     ══════════════════════════════════════════ */
-    #education { background: var(--bg); }
+    #education { 
+      background: var(--bg); 
+      padding: 5rem 5% 4rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .edu-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
     .edu-card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius:4px; padding:2.5rem;
-      display:flex; gap:2rem; max-width:820px;
+      display:flex; gap:2rem;
       position:relative; overflow:hidden;
       transition: border-color .3s;
     }
@@ -1015,20 +1025,36 @@
     <p class="section-label reveal">Pendidikan</p>
     <h2 class="section-title reveal">Latar Belakang<br>Akademik</h2>
     <p class="section-sub reveal">Menempuh studi dengan dedikasi penuh dan konsistensi berprestasi.</p>
-    <div class="edu-card reveal">
-      <div class="edu-icon">🎓</div>
-      <div class="edu-body">
-        <h3 class="edu-school">Universitas Pendidikan Indonesia</h3>
-        <p class="edu-degree">S1_PENDIDIKAN_ILMU_KOMPUTER // FPMIPA</p>
-        <div class="edu-meta">
-          <span>📅 2024 – SEKARANG</span>
-          <span>IPK: <strong>3,88 / 4,00</strong></span>
-          <span>SKS: <strong>64</strong></span>
-          <span>📍 Asrama UPI Bumi Siliwangi, Bandung</span>
+    <div class="edu-cards-grid">
+      <div class="edu-card reveal">
+        <div class="edu-icon">🎓</div>
+        <div class="edu-body">
+          <h3 class="edu-school">Universitas Pendidikan Indonesia</h3>
+          <p class="edu-degree">S1_PENDIDIKAN_ILMU_KOMPUTER // FPMIPA</p>
+          <div class="edu-meta">
+            <span>📅 2024 – SEKARANG</span>
+            <span>IPK: <strong>3,88 / 4,00</strong></span>
+            <span>SKS: <strong>64</strong></span>
+            <span>📍 Asrama UPI Bumi Siliwangi, Bandung</span>
+          </div>
+          <p style="font-size:.82rem; color:var(--muted);">
+            Berusaha memberikan kontribusi terbaik di berbagai aspek akademik dan organisasi. Sejak semester pertama, aktif terlibat dalam riset, kepanitiaan, dan kegiatan mahasiswa.
+          </p>
         </div>
-        <p style="font-size:.82rem; color:var(--muted);">
-          Berusaha memberikan kontribusi terbaik di berbagai aspek akademik dan organisasi. Sejak semester pertama, aktif terlibat dalam riset, kepanitiaan, dan kegiatan mahasiswa.
-        </p>
+      </div>
+      <div class="edu-card reveal" style="transition-delay:.1s">
+        <div class="edu-icon">📚</div>
+        <div class="edu-body">
+          <h3 class="edu-school">Madrasah Aliyah Negeri 2 Majalengka</h3>
+          <p class="edu-degree">SMA // SAINS</p>
+          <div class="edu-meta">
+            <span>📅 2021 – 2024</span>
+            <span>📍 Majalengka, Jawa Barat</span>
+          </div>
+          <p style="font-size:.82rem; color:var(--muted);">
+            Menyelesaikan pendidikan menengah atas dengan fokus pada ilmu sains. Aktif mengikuti berbagai kegiatan akademik dan ekstrakurikuler selama masa studi.
+          </p>
+        </div>
       </div>
     </div>
   </section>
