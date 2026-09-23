@@ -501,6 +501,18 @@
       color: var(--fg-2);
     }
     .exp-item .card-desc { margin-bottom: 24px; }
+    .card-desc cite { font-style: normal; color: var(--fg-2); }
+    .card-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      align-self: flex-start;
+      margin-top: auto;
+      padding-top: 20px;
+      color: var(--fg);
+      text-decoration: none;
+    }
+    .card-link:hover { color: var(--rec); }
+    .card-link .icon { transition: transform .25s var(--ease); }
+    .card-link:hover .icon { transform: translate(2px, -2px); }
 
     /* EXIF-style spec list */
     .specs {
@@ -542,6 +554,7 @@
       font-variant-numeric: tabular-nums;
     }
     .stat-label { margin-top: 10px; font-size: .8125rem; line-height: 1.4; color: var(--muted); }
+    .stat--wide { grid-column: span 2; }
 
     /* ============================================================
        GALLERY
@@ -997,15 +1010,10 @@
               <p class="stat-value">86</p>
               <p class="stat-label">SKS telah ditempuh</p>
             </div>
-            <div class="stat vf">
+            <div class="stat stat--wide vf">
               <p class="mono">03 / Riset</p>
               <p class="stat-value">2</p>
               <p class="stat-label">Proyek riset aktif</p>
-            </div>
-            <div class="stat vf">
-              <p class="mono">04 / Paper</p>
-              <p class="stat-value">2</p>
-              <p class="stat-label">Papers - Deep Learning &amp; Digital Innovation</p>
             </div>
           </div>
         </div>
@@ -1320,9 +1328,13 @@
             <p class="card-desc">Riset deep learning bersama dosen untuk deteksi polusi cahaya dan pemantauan illegal fishing via citra satelit dan model machine learning.</p>
           </article>
           <article class="card vf reveal">
-            <div class="card-top mono"><span class="hi">03</span><span>Terpublikasi</span></div>
+            <div class="card-top mono"><span class="hi">03</span><span>Terpublikasi · Sinta 5</span></div>
             <h3 class="card-title">Publikasi Jurnal Ilmiah Sinta 5</h3>
-            <p class="card-desc">Berhasil mempublikasikan karya ilmiah pada jurnal bereputasi Sinta 5 - bukti komitmen terhadap penelitian dan penulisan ilmiah berkualitas.</p>
+            <p class="card-desc"><cite>Kelengkapan Fasilitas Lab Komputer yang Mempengaruhi Semangat Belajar Siswa/Siswi TKJ di SMKN 1 Dawuan</cite>. Faqih, A. H., Ananta, A. R., Ardian, F. A., &amp; Kusumah, E. <i>Jurnal Pendidikan Tambusai</i>, 9(1), 304–310, 2025.</p>
+            <a class="card-link mono" href="https://jptam.org/index.php/jptam/article/view/24180" target="_blank" rel="noopener">
+              Baca artikel
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </a>
           </article>
           <article class="card vf reveal" style="--d:1">
             <div class="card-top mono"><span class="hi">04</span><span>Beasiswa nasional</span></div>
