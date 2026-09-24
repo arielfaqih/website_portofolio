@@ -1069,12 +1069,10 @@
 
         <div class="gallery grid12">
           <figure class="shot shot--reel vf reveal">
-            <span class="thirds" aria-hidden="true"></span>
-            <div class="shot-empty mono">
-              <span class="play"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg></span>
-              <span>Showreel segera hadir</span>
-            </div>  
-            <figcaption class="shot-meta mono"><span>FR.002 · Showreel</span><span>16:9</span></figcaption>
+            <video src="/galeri/fr002-showreel.mp4" poster="/galeri/fr002-showreel-poster.jpg" width="1600" height="900"
+                   muted loop playsinline controls preload="none"
+                   aria-label="Showreel: mahasiswa berjaket almamater UPI melambaikan tangan di tribun stadion"></video>
+            <figcaption class="shot-meta mono"><span>FR.002 · Showreel</span><span>16:9 · 00:08</span></figcaption>
           </figure>
           <figure class="shot shot--tall vf reveal" style="--d:1">
             <img src="/galeri/fr003-potret.jpg" alt="Potret seseorang duduk bersandar di dahan pohon besar" width="1000" height="1500" loading="lazy">
@@ -1642,6 +1640,19 @@
         if (visible && !running) { running = true; requestAnimationFrame(tick); }
         if (!visible) running = false;
       }).observe(tc.closest('.vf-frame'));
+    }
+
+    /* ── Showreel: play muted while on screen, pause when scrolled away ── */
+    var reel = document.querySelector('.shot--reel video');
+    if (reel && !reduceMotion) {
+      var autoPaused = false, userPaused = false;
+      reel.addEventListener('pause', function () { if (!autoPaused) userPaused = true; });
+      reel.addEventListener('play', function () { userPaused = false; });
+      new IntersectionObserver(function (entries) {
+        var visible = entries[0].isIntersecting;
+        if (visible && !userPaused) { autoPaused = false; reel.play().catch(function () {}); }
+        if (!visible && !reel.paused) { autoPaused = true; reel.pause(); }
+      }, { threshold: 0.4 }).observe(reel);
     }
 
     /* ── Footer year ── */
