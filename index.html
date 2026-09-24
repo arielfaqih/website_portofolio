@@ -33,6 +33,9 @@
       --line-2: #3A3936;
       --rec:    #FF3B30;
       --guide:  rgba(238, 236, 231, .035);
+      --tracker:        rgba(238, 236, 231, .2);
+      --tracker-strong: rgba(238, 236, 231, .6);
+      --grain-opacity:  .06;
 
       --sans: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
       --mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
@@ -57,6 +60,9 @@
       --line-2: #B9B3A7;
       --rec:    #C4221A;
       --guide:  rgba(17, 17, 16, .05);
+      --tracker:        rgba(17, 17, 16, .18);
+      --tracker-strong: rgba(17, 17, 16, .55);
+      --grain-opacity:  .07;
       color-scheme: light;
     }
 
@@ -173,6 +179,92 @@
     .guides .grid12 { height: 100%; }
     .guides span { border-inline: 1px solid var(--guide); }
     .no-guides .guides { opacity: 0; }
+
+    /* ============================================================
+       AMBIENT MOTION - AF tracker on the grid + film grain
+       ============================================================ */
+    /* Soft crosshair + AF point that hops between grid-line intersections (positioned by JS) */
+    .tracker {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+      --tx: 50vw; --ty: 50vh;
+      opacity: 0;
+      transition: opacity 1.2s var(--ease);
+    }
+    .tracker.is-ready { opacity: 1; }
+    .no-guides .tracker { opacity: 0; }
+    .tracker-x, .tracker-y, .tracker-af {
+      position: absolute; top: 0; left: 0;
+      transition: transform 2.4s cubic-bezier(.65, 0, .35, 1);
+      will-change: transform;
+    }
+    .tracker.no-anim .tracker-x,
+    .tracker.no-anim .tracker-y,
+    .tracker.no-anim .tracker-af { transition: none; }
+    .tracker-x {
+      width: 1px; height: 90vh;
+      transform: translate(var(--tx), calc(var(--ty) - 45vh));
+      background: linear-gradient(transparent, var(--tracker), transparent);
+    }
+    .tracker-y {
+      width: 90vw; height: 1px;
+      transform: translate(calc(var(--tx) - 45vw), var(--ty));
+      background: linear-gradient(90deg, transparent, var(--tracker), transparent);
+    }
+    .tracker-af {
+      width: 26px; height: 26px;
+      transform: translate(calc(var(--tx) - 12.5px), calc(var(--ty) - 12.5px));
+      color: var(--tracker-strong);
+    }
+    .tracker-af .brk { --bi: 0px; --s: 7px; --bw: 1px; opacity: .5; transition: opacity .4s; }
+    .tracker.is-locked .tracker-af .brk { opacity: 1; animation: af-lock .55s var(--ease); }
+    @keyframes af-lock {
+      0%   { transform: scale(1.45); }
+      60%  { transform: scale(.9); }
+      100% { transform: scale(1); }
+    }
+    .tracker-read {
+      position: absolute; left: calc(100% + 10px); top: 50%;
+      transform: translateY(-50%);
+      font-size: .625rem;
+      white-space: nowrap;
+      color: var(--muted);
+      opacity: 0;
+      transition: opacity .5s;
+    }
+    .tracker.is-flip .tracker-read { left: auto; right: calc(100% + 10px); }
+    .tracker.is-locked .tracker-read { opacity: .85; }
+
+    /* Film grain over the whole page: one noise tile (built in JS) jittered ~12x per second */
+    .grain {
+      display: none;
+      position: fixed; inset: -50%; z-index: 70;
+      pointer-events: none;
+      background: var(--fg);
+      opacity: var(--grain-opacity);
+      -webkit-mask: var(--noise) 0 0 / 180px 180px repeat;
+              mask: var(--noise) 0 0 / 180px 180px repeat;
+      animation: grain .8s steps(1, end) infinite;
+      will-change: transform;
+    }
+    .has-grain .grain { display: block; }
+    @keyframes grain {
+      0%   { transform: translate(0, 0); }
+      10%  { transform: translate(-4%, -7%); }
+      20%  { transform: translate(-11%, 3%); }
+      30%  { transform: translate(6%, -16%); }
+      40%  { transform: translate(-3%, 17%); }
+      50%  { transform: translate(-12%, 8%); }
+      60%  { transform: translate(11%, 0); }
+      70%  { transform: translate(0, 12%); }
+      80%  { transform: translate(2%, -4%); }
+      90%  { transform: translate(-8%, 9%); }
+      100% { transform: translate(0, 0); }
+    }
+
+    @media print {
+      .guides, .tracker, .grain { display: none !important; }
+    }
 
     main, .footer { position: relative; z-index: 1; }
 
@@ -796,6 +888,8 @@
       html { scroll-behavior: auto; }
       .js .reveal { opacity: 1; transform: none; transition: none; }
       .rec-dot.blink, .vf-focus { animation: none; }
+      .grain { animation: none; }
+      .tracker { display: none; }
       *, *::before, *::after { transition-duration: 0s !important; }
     }
 
@@ -847,6 +941,7 @@
     @media (max-width: 640px) {
       .guides .grid12 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
       .guides span:nth-child(n+5) { display: none; }
+      .tracker { display: none; }
 
       .exp-grid, .works { grid-template-columns: 1fr; }
       .work--wide { grid-column: auto; }
@@ -884,6 +979,14 @@
       <span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
   </div>
+
+  <!-- Ambient motion: AF point hopping between grid intersections + film grain -->
+  <div class="tracker" id="tracker" aria-hidden="true">
+    <span class="tracker-x"></span>
+    <span class="tracker-y"></span>
+    <span class="tracker-af"><span class="brk"></span><span class="tracker-read mono"></span></span>
+  </div>
+  <div class="grain" aria-hidden="true"></div>
 
   <!-- ───────────── NAV ───────────── -->
   <header class="nav" id="nav">
@@ -1640,6 +1743,74 @@
         if (visible && !running) { running = true; requestAnimationFrame(tick); }
         if (!visible) running = false;
       }).observe(tc.closest('.vf-frame'));
+    }
+
+    /* ── Film grain: build one 180px noise tile, used as a CSS mask ── */
+    (function () {
+      var c = document.createElement('canvas');
+      c.width = c.height = 180;
+      var ctx = c.getContext('2d');
+      if (!ctx) return;
+      var img = ctx.createImageData(180, 180), d = img.data;
+      for (var i = 3; i < d.length; i += 4) d[i] = Math.random() * 255;
+      ctx.putImageData(img, 0, 0);
+      root.style.setProperty('--noise', 'url(' + c.toDataURL('image/png') + ')');
+      root.classList.add('has-grain');
+    })();
+
+    /* ── AF tracker: hop between grid-line intersections, then "lock focus" ── */
+    var tracker = document.getElementById('tracker');
+    if (tracker && !reduceMotion) {
+      var guideCols = document.querySelectorAll('.guides span');
+      var readout = tracker.querySelector('.tracker-read');
+      var firstHop = true;
+      var CONTENT = 'p, h1, h2, h3, a, button, img, video, figure, li, dl, .card, .stat, .nav, .slate, .contact-frame';
+      // A spot is usable only if the AF point and its readout sit over empty space, not over text or media.
+      function isEmpty(x, y) {
+        var el = document.elementFromPoint(x, y);
+        return !el || !el.closest(CONTENT);
+      }
+      function hop() {
+        var cols = Array.prototype.filter.call(guideCols, function (s) {
+          return getComputedStyle(s).display !== 'none';
+        });
+        var target = null;
+        if (!document.hidden && cols.length && getComputedStyle(tracker).display !== 'none') {
+          for (var tries = 0; tries < 16 && !target; tries++) {
+            var ci = Math.floor(Math.random() * cols.length);
+            var cx = Math.round(cols[ci].getBoundingClientRect().left);
+            var cyPct = 16 + Math.floor(Math.random() * 68);
+            var cy = Math.round(window.innerHeight * cyPct / 100);
+            var flip = cx > window.innerWidth * 0.7;
+            var rx = flip ? cx - 90 : cx + 90;
+            if (isEmpty(cx, cy) && isEmpty(cx - 14, cy) && isEmpty(cx + 14, cy) && isEmpty(rx, cy)) {
+              target = { i: ci, x: cx, y: cy, yPct: cyPct, flip: flip };
+            }
+          }
+        }
+        if (target) {
+          var i = target.i, x = target.x, y = target.y, yPct = target.yPct;
+          tracker.classList.remove('is-locked');
+          tracker.classList.toggle('is-flip', target.flip);
+          tracker.style.setProperty('--tx', x + 'px');
+          tracker.style.setProperty('--ty', y + 'px');
+          readout.textContent = 'AF · COL ' + pad(i + 1) + ' · ' + yPct + '%';
+          if (firstHop) {
+            firstHop = false;
+            tracker.classList.add('no-anim');
+            requestAnimationFrame(function () {
+              requestAnimationFrame(function () {
+                tracker.classList.remove('no-anim');
+                tracker.classList.add('is-ready', 'is-locked');
+              });
+            });
+          } else {
+            setTimeout(function () { tracker.classList.add('is-locked'); }, 2400);
+          }
+        }
+        setTimeout(hop, 6000 + Math.random() * 3000);
+      }
+      hop();
     }
 
     /* ── Showreel: play muted while on screen, pause when scrolled away ── */
