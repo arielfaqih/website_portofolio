@@ -33,8 +33,7 @@
       --line-2: #3A3936;
       --rec:    #FF3B30;
       --guide:  rgba(238, 236, 231, .035);
-      --tracker:        rgba(238, 236, 231, .2);
-      --tracker-strong: rgba(238, 236, 231, .6);
+      --tracker:        rgba(238, 236, 231, .42);
       --grain-opacity:  .06;
 
       --sans: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -60,8 +59,7 @@
       --line-2: #B9B3A7;
       --rec:    #C4221A;
       --guide:  rgba(17, 17, 16, .05);
-      --tracker:        rgba(17, 17, 16, .18);
-      --tracker-strong: rgba(17, 17, 16, .55);
+      --tracker:        rgba(17, 17, 16, .4);
       --grain-opacity:  .07;
       color-scheme: light;
     }
@@ -181,59 +179,79 @@
     .no-guides .guides { opacity: 0; }
 
     /* ============================================================
-       AMBIENT MOTION - AF tracker on the grid + film grain
+       AMBIENT MOTION - subject-tracking AF frame, film grain, viewfinder cursor
        ============================================================ */
-    /* Soft crosshair + AF point that hops between grid-line intersections (positioned by JS) */
+    /* AF frame that tracks the content in view while scrolling (positioned by JS) */
     .tracker {
-      position: fixed; inset: 0; z-index: 0;
+      position: fixed; inset: 0; z-index: 45;
       pointer-events: none;
-      --tx: 50vw; --ty: 50vh;
       opacity: 0;
-      transition: opacity 1.2s var(--ease);
+      transition: opacity .8s var(--ease);
     }
     .tracker.is-ready { opacity: 1; }
     .no-guides .tracker { opacity: 0; }
-    .tracker-x, .tracker-y, .tracker-af {
-      position: absolute; top: 0; left: 0;
-      transition: transform 2.4s cubic-bezier(.65, 0, .35, 1);
-      will-change: transform;
-    }
-    .tracker.no-anim .tracker-x,
-    .tracker.no-anim .tracker-y,
-    .tracker.no-anim .tracker-af { transition: none; }
-    .tracker-x {
-      width: 1px; height: 90vh;
-      transform: translate(var(--tx), calc(var(--ty) - 45vh));
-      background: linear-gradient(transparent, var(--tracker), transparent);
-    }
-    .tracker-y {
-      width: 90vw; height: 1px;
-      transform: translate(calc(var(--tx) - 45vw), var(--ty));
-      background: linear-gradient(90deg, transparent, var(--tracker), transparent);
-    }
     .tracker-af {
-      width: 26px; height: 26px;
-      transform: translate(calc(var(--tx) - 12.5px), calc(var(--ty) - 12.5px));
-      color: var(--tracker-strong);
+      position: absolute; top: 0; left: 0;
+      width: 0; height: 0;
+      color: var(--tracker);
+      will-change: transform, width, height;
     }
-    .tracker-af .brk { --bi: 0px; --s: 7px; --bw: 1px; opacity: .5; transition: opacity .4s; }
-    .tracker.is-locked .tracker-af .brk { opacity: 1; animation: af-lock .55s var(--ease); }
+    .tracker-af .brk { --bi: 0px; --s: 12px; --bw: 1px; opacity: .6; transition: opacity .4s; }
+    .tracker.is-locked .tracker-af .brk { opacity: 1; animation: af-lock .5s var(--ease); }
     @keyframes af-lock {
-      0%   { transform: scale(1.45); }
-      60%  { transform: scale(.9); }
-      100% { transform: scale(1); }
+      0%   { transform: scale(1.025); opacity: .5; }
+      100% { transform: none; opacity: 1; }
     }
+    /* Readout sits in the frame's bottom padding band, so it never covers the subject */
     .tracker-read {
-      position: absolute; left: calc(100% + 10px); top: 50%;
-      transform: translateY(-50%);
+      position: absolute; right: 18px; bottom: 1px;
       font-size: .625rem;
+      line-height: 1.2;
       white-space: nowrap;
       color: var(--muted);
       opacity: 0;
-      transition: opacity .5s;
+      transition: opacity .4s;
     }
-    .tracker.is-flip .tracker-read { left: auto; right: calc(100% + 10px); }
-    .tracker.is-locked .tracker-read { opacity: .85; }
+    .tracker.is-locked .tracker-read { opacity: .9; }
+
+    /* Viewfinder cursor (mouse only): dot + AF brackets that snap onto links and buttons */
+    .cursor { display: none; }
+    .has-cursor, .has-cursor * { cursor: none !important; }
+    .has-cursor .cursor {
+      display: block;
+      position: fixed; inset: 0; z-index: 90;
+      pointer-events: none;
+      color: #fff;
+      mix-blend-mode: difference;
+      opacity: 0;
+      transition: opacity .25s;
+    }
+    .has-cursor .cursor.is-visible { opacity: 1; }
+    .cursor-dot {
+      position: absolute; top: -2px; left: -2px;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: currentColor;
+      will-change: transform;
+      transition: opacity .2s;
+    }
+    .cursor.is-snapped .cursor-dot { opacity: 0; }
+    .cursor-af {
+      position: absolute; top: 0; left: 0;
+      width: 22px; height: 22px;
+      will-change: transform, width, height;
+    }
+    .cursor-af .brk { --bi: 0px; --s: 6px; --bw: 1.5px; transition: transform .15s var(--ease); }
+    .cursor.is-down .cursor-af .brk { transform: scale(.8); }
+    .cursor-label {
+      position: absolute; top: 0; left: 0;
+      font-size: .625rem;
+      white-space: nowrap;
+      will-change: transform;
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .cursor.has-label .cursor-label { opacity: 1; }
 
     /* Film grain over the whole page: one noise tile (built in JS) jittered ~12x per second */
     .grain {
@@ -980,13 +998,16 @@
     </div>
   </div>
 
-  <!-- Ambient motion: AF point hopping between grid intersections + film grain -->
+  <!-- Ambient motion: AF frame tracking the content in view, film grain, viewfinder cursor -->
   <div class="tracker" id="tracker" aria-hidden="true">
-    <span class="tracker-x"></span>
-    <span class="tracker-y"></span>
     <span class="tracker-af"><span class="brk"></span><span class="tracker-read mono"></span></span>
   </div>
   <div class="grain" aria-hidden="true"></div>
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <span class="cursor-af"><span class="brk"></span></span>
+    <span class="cursor-dot"></span>
+    <span class="cursor-label mono"></span>
+  </div>
 
   <!-- ───────────── NAV ───────────── -->
   <header class="nav" id="nav">
@@ -1758,59 +1779,156 @@
       root.classList.add('has-grain');
     })();
 
-    /* ── AF tracker: hop between grid-line intersections, then "lock focus" ── */
+    /* ── AF subject tracking: the frame follows the content nearest the focus line ── */
     var tracker = document.getElementById('tracker');
     if (tracker && !reduceMotion) {
-      var guideCols = document.querySelectorAll('.guides span');
-      var readout = tracker.querySelector('.tracker-read');
-      var firstHop = true;
-      var CONTENT = 'p, h1, h2, h3, a, button, img, video, figure, li, dl, .card, .stat, .nav, .slate, .contact-frame';
-      // A spot is usable only if the AF point and its readout sit over empty space, not over text or media.
-      function isEmpty(x, y) {
-        var el = document.elementFromPoint(x, y);
-        return !el || !el.closest(CONTENT);
+      var tAf = tracker.querySelector('.tracker-af');
+      var tRead = tracker.querySelector('.tracker-read');
+      var SUBJECTS = '.hero-name, .viewfinder .vf-frame, .sec-title, .about-text, .stats, .shot, ' +
+                     '.edu-grid > .card, .exp-item, .works > .card, .skills > .card, .contact-title, .contact-list';
+      var subjects = Array.prototype.slice.call(document.querySelectorAll(SUBJECTS));
+      var PAD = 14, cur = null, rafT = 0;
+      var biasX = window.innerWidth / 2;
+
+      // Headings are wide blocks; frame the union of their text lines instead of the whole box.
+      function rectOf(el) {
+        if (!/^H[12]$/.test(el.tagName)) return el.getBoundingClientRect();
+        var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), rg = document.createRange(), n;
+        var L = Infinity, T = Infinity, R = -Infinity, B = -Infinity;
+        while ((n = walker.nextNode())) {
+          if (!n.nodeValue.trim()) continue;
+          rg.selectNodeContents(n);
+          var rects = rg.getClientRects();
+          for (var q = 0; q < rects.length; q++) {
+            var b = rects[q];
+            if (!b.width) continue;
+            L = Math.min(L, b.left); T = Math.min(T, b.top); R = Math.max(R, b.right); B = Math.max(B, b.bottom);
+          }
+        }
+        if (L === Infinity) return el.getBoundingClientRect();
+        return { left: L, top: T, right: R, bottom: B, width: R - L, height: B - T };
       }
-      function hop() {
-        var cols = Array.prototype.filter.call(guideCols, function (s) {
-          return getComputedStyle(s).display !== 'none';
+      function sceneOf(el) {
+        var sec = el.closest('section'), sc = sec && sec.querySelector('.slate-sc');
+        return sc ? sc.textContent.trim() : 'SC.00';
+      }
+      // Subject = the element nearest the focus line (45% down), preferring the one under the mouse.
+      function pickSubject() {
+        var focusY = window.innerHeight * 0.45, best = null, bestD = Infinity;
+        for (var k = 0; k < subjects.length; k++) {
+          var el = subjects[k];
+          if (el.offsetParent === null) continue;
+          var r = rectOf(el);
+          if (!r.width || r.bottom < 90 || r.top > window.innerHeight - 40) continue;
+          var dy = focusY < r.top ? r.top - focusY : (focusY > r.bottom ? focusY - r.bottom : 0);
+          var dx = biasX < r.left ? r.left - biasX : (biasX > r.right ? biasX - r.right : 0);
+          var d = dy + dx * 0.35;
+          if (d < bestD) { bestD = d; best = el; }
+        }
+        return best;
+      }
+      function trackFrame() {
+        rafT = 0;
+        if (getComputedStyle(tracker).display === 'none') return;
+        var el = pickSubject();
+        if (!el) { tracker.classList.remove('is-ready'); return; }
+        var r = rectOf(el);
+        var tgt = { x: r.left - PAD, y: r.top - PAD, w: r.width + PAD * 2, h: r.height + PAD * 2 };
+        if (!cur) cur = { x: tgt.x, y: tgt.y, w: tgt.w, h: tgt.h };
+        tracker.classList.add('is-ready');
+        var moving = false;
+        ['x', 'y', 'w', 'h'].forEach(function (k) {
+          var diff = tgt[k] - cur[k];
+          if (Math.abs(diff) > 0.5) { cur[k] += diff * 0.14; moving = true; } else { cur[k] = tgt[k]; }
         });
-        var target = null;
-        if (!document.hidden && cols.length && getComputedStyle(tracker).display !== 'none') {
-          for (var tries = 0; tries < 16 && !target; tries++) {
-            var ci = Math.floor(Math.random() * cols.length);
-            var cx = Math.round(cols[ci].getBoundingClientRect().left);
-            var cyPct = 16 + Math.floor(Math.random() * 68);
-            var cy = Math.round(window.innerHeight * cyPct / 100);
-            var flip = cx > window.innerWidth * 0.7;
-            var rx = flip ? cx - 90 : cx + 90;
-            if (isEmpty(cx, cy) && isEmpty(cx - 14, cy) && isEmpty(cx + 14, cy) && isEmpty(rx, cy)) {
-              target = { i: ci, x: cx, y: cy, yPct: cyPct, flip: flip };
-            }
-          }
-        }
-        if (target) {
-          var i = target.i, x = target.x, y = target.y, yPct = target.yPct;
+        tAf.style.transform = 'translate(' + cur.x.toFixed(1) + 'px,' + cur.y.toFixed(1) + 'px)';
+        tAf.style.width = cur.w.toFixed(1) + 'px';
+        tAf.style.height = cur.h.toFixed(1) + 'px';
+        if (moving) {
           tracker.classList.remove('is-locked');
-          tracker.classList.toggle('is-flip', target.flip);
-          tracker.style.setProperty('--tx', x + 'px');
-          tracker.style.setProperty('--ty', y + 'px');
-          readout.textContent = 'AF · COL ' + pad(i + 1) + ' · ' + yPct + '%';
-          if (firstHop) {
-            firstHop = false;
-            tracker.classList.add('no-anim');
-            requestAnimationFrame(function () {
-              requestAnimationFrame(function () {
-                tracker.classList.remove('no-anim');
-                tracker.classList.add('is-ready', 'is-locked');
-              });
-            });
-          } else {
-            setTimeout(function () { tracker.classList.add('is-locked'); }, 2400);
-          }
+          rafT = requestAnimationFrame(trackFrame);
+        } else if (!tracker.classList.contains('is-locked')) {
+          // Focus locked: show where we are and the subject's measured size.
+          tRead.textContent = 'AF-C · ' + sceneOf(el) + ' · ' + Math.round(r.width) + '×' + Math.round(r.height);
+          tracker.classList.add('is-locked');
         }
-        setTimeout(hop, 6000 + Math.random() * 3000);
       }
-      hop();
+      function kickTracker() { if (!rafT) rafT = requestAnimationFrame(trackFrame); }
+      window.addEventListener('scroll', kickTracker, { passive: true });
+      window.addEventListener('resize', kickTracker);
+      document.addEventListener('transitionend', kickTracker);
+      document.addEventListener('mousemove', function (e) { biasX = e.clientX; kickTracker(); }, { passive: true });
+      if ('ResizeObserver' in window) new ResizeObserver(kickTracker).observe(document.body);
+      kickTracker();
+    }
+
+    /* ── Viewfinder cursor (mouse only): brackets trail the pointer and snap onto links/buttons ── */
+    var cursor = document.getElementById('cursor');
+    var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (cursor && finePointer && !reduceMotion) {
+      root.classList.add('has-cursor');
+      var cDot = cursor.querySelector('.cursor-dot');
+      var cAf = cursor.querySelector('.cursor-af');
+      var cLabel = cursor.querySelector('.cursor-label');
+      var SNAP = 'a, button, .chip';
+      var mx = -100, my = -100, box = null, rafC = 0, lastLabel = '';
+
+      function cursorTarget() {
+        var el = document.elementFromPoint(mx, my);
+        var snap = el && el.closest(SNAP), label = '';
+        if (snap) {
+          var sr = snap.getBoundingClientRect();
+          if (sr.width > 720 || sr.height > 160) snap = null;
+        }
+        if (el) {
+          var video = el.closest('video'), shot = el.closest('.shot');
+          if (video) label = video.paused ? 'PLAY' : 'PAUSE';
+          else if (shot) {
+            var cap = shot.querySelector('.shot-meta span');
+            label = cap ? cap.textContent.split('·')[0].trim() : '';
+          } else if (el.closest('.viewfinder')) label = 'REC';
+        }
+        return { snap: snap, label: label };
+      }
+      function cursorFrame() {
+        rafC = 0;
+        var t = cursorTarget(), tgt;
+        if (t.snap) {
+          var r = t.snap.getBoundingClientRect();
+          tgt = { x: r.left - 5, y: r.top - 5, w: r.width + 10, h: r.height + 10 };
+        } else {
+          tgt = { x: mx - 11, y: my - 11, w: 22, h: 22 };
+        }
+        cursor.classList.toggle('is-snapped', !!t.snap);
+        if (t.label !== lastLabel) { cLabel.textContent = t.label; lastLabel = t.label; }
+        cursor.classList.toggle('has-label', !!t.label && !t.snap);
+        if (!box) box = { x: tgt.x, y: tgt.y, w: tgt.w, h: tgt.h };
+        var moving = false;
+        ['x', 'y', 'w', 'h'].forEach(function (k) {
+          var diff = tgt[k] - box[k];
+          if (Math.abs(diff) > 0.3) { box[k] += diff * 0.28; moving = true; } else { box[k] = tgt[k]; }
+        });
+        cDot.style.transform = 'translate(' + mx + 'px,' + my + 'px)';
+        cLabel.style.transform = 'translate(' + (mx + 18) + 'px,' + (my + 14) + 'px)';
+        cAf.style.transform = 'translate(' + box.x.toFixed(1) + 'px,' + box.y.toFixed(1) + 'px)';
+        cAf.style.width = box.w.toFixed(1) + 'px';
+        cAf.style.height = box.h.toFixed(1) + 'px';
+        if (moving) rafC = requestAnimationFrame(cursorFrame);
+      }
+      function kickCursor() { if (!rafC) rafC = requestAnimationFrame(cursorFrame); }
+      document.addEventListener('mousemove', function (e) {
+        mx = e.clientX; my = e.clientY;
+        cursor.classList.add('is-visible');
+        kickCursor();
+      }, { passive: true });
+      window.addEventListener('scroll', kickCursor, { passive: true });
+      document.addEventListener('mouseout', function (e) { if (!e.relatedTarget) cursor.classList.remove('is-visible'); });
+      document.addEventListener('mousedown', function () { cursor.classList.add('is-down'); });
+      document.addEventListener('mouseup', function () { cursor.classList.remove('is-down'); kickCursor(); });
+      document.querySelectorAll('video').forEach(function (v) {
+        v.addEventListener('play', kickCursor);
+        v.addEventListener('pause', kickCursor);
+      });
     }
 
     /* ── Showreel: play muted while on screen, pause when scrolled away ── */
